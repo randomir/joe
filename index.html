@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>Joe's test</title>
+    <style type="text/css">
+        .blue { color: blue }
+    </style>
+    
+    <script type="text/javascript" src="joe/joe.min.js"></script>
+    <script type="text/javascript">
+        //joe.fn.attach(window, "load", function() {
+        $(function() {
+            var p = $("p");
+            console.log(p);
+            //p.css({color: "red"});
+            //console.log(p.text());
+            
+            //$(".ui-link:nth-of-type(2n+1)").css({backgroundColor: "blue", color: "white"});
+            
+            $("a").each(function(idx) {
+                var e = $(this);
+                e.html(idx + ". " + e.html());
+            });
+            
+            // on-click with navigation canceled
+            $("#l2").on("click", function(e) {
+                alert("link 2");
+                return false;
+            });
+            
+            // prevent default
+            $("#l3").on("click", false);
+            
+            // toggle classes via button
+            $("#b1").on("click", function() {
+                var p = $("p"), cls = "blue";
+                if (p.hasClass(cls)) {
+                    p.removeClass(cls);
+                } else {
+                    p.addClass(cls);
+                }
+            });
+            
+            // show/hide elem
+            $("#b2").on("click", function() {
+                $("p").hide();
+            });
+            $("#b3").on("click", function() {
+                $("p").show();
+            });
+            
+            $("#at").on("click", function() {
+                console.log($("p").attr("class"));
+                $.ajax({
+                    url: "http://lynx/joe/index.html",
+                    data: {key1: "value1", key2: "value2"},
+                    success: function(data) {
+                        console.log(data);
+                    }
+                });
+            });
+            
+        });
+        
+    </script>
+</head>
+<body>
+    <p class="intro para">Introductionary paragraph.</p>
+    <a id="l1" class="ui-link" href="#">First link</a><br>
+    <a id="l2" class="ui-link" href="#">Second link</a><br>
+    <a id="l3" class="ui-link" href="#">Third link</a><br>
+    <br>
+    <button id="b1" type="button">Do something</button><br>
+    <button id="b2" type="button">Hide</button><button id="b3" type="button">Show</button><br>
+    <br>
+    <button id="at" type="button">Attr</button><br>
+    
+</body>
+</html>

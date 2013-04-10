@@ -179,7 +179,7 @@
             return base + (base.contains("?") ? "&" : "?") + joe.fn.kvjoin(params);
         },
         
-        // config options: url, method, data, async,  success, error, complete
+        // config options: str:url, str:method, str/obj:data, boolean:async, fn:success, fn:error, fn:complete
         ajax: function(config) {
             var req = createXMLHTTPObject(), url = config.url;
             if (!req || !url) return;
@@ -192,20 +192,26 @@
             }
             
             req.open(method, url, !!config.async);
-            req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-            req.setRequestHeader("User-Agent", "joe/0.1");
+            //req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            //req.setRequestHeader("User-Agent", "joe/0.1");
             if (method == "POST") req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             
             req.onreadystatechange = function () {
                 if (req.readyState != 4) return;
+                if (req.status == 0) return;
                 if (req.status != 200 && req.status != 304) {
-                    return config.error && config.error(req, req.status);
+                    config.error && config.error(req, req.statusText);
+                } else {
+                    config.success && config.success(req.response, req.statusText, req);
                 }
-                config.success && config.success(req.response, req.statusText, req);
-                config.complete && config.complete(req);
+                config.complete && config.complete(req, req.statusText);
             }
             if (req.readyState == 4) return;
-            req.send(data);
+            try {
+                req.send(data);
+            } catch (e) {
+                config.error && config.error(req, req.statusText, e);
+            }
         }
     });
 

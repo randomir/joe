@@ -124,12 +124,12 @@
         
         // $().html([innerHTML])
         html: function(html) {
-            return html ? this[0].innerHTML=html: this[0].innerHTML;
+            return html ? (this[0].innerHTML=html, this): this[0].innerHTML;
         },
         
         // $().text([textContent])
         text: function(text) {
-            return text ? this[0].textContent=text : this[0].textContent;
+            return text ? (this[0].textContent=text, this) : this[0].textContent;
         },
         
         // $().attr(name [, value])

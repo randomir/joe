@@ -6,6 +6,7 @@
  * Works in: Chrome 1+, Firefox 3.5+, IE 8+, Opera 10+, Safari 4+.
  *
  * Written by Radomir Stevanovic, April 2013.
+ * Source: https://github.com/randomir/joe/.
  */
 
 (function(window, undefined) {
@@ -180,37 +181,52 @@
         },
         
         // config options: str:url, str:method, str/obj:data, boolean:async, fn:success, fn:error, fn:complete
+        // ex 1: $.ajax({url: "loc", data: {k: "test x", n: 2}})
+        //  --> GET loc?k=test%20x&n=2
+        // ex 2: $.ajax({url: "loc", method: "post", data: "str"})
+        //  --> POST loc, body == str
+        // ex 3: $.ajax({url: "loc", method: "post", data: {key: "value", x: 3.14})
+        //  --> POST loc, body == key=value&x=3.14
         ajax: function(config) {
             var req = createXMLHTTPObject(), url = config.url;
             if (!req || !url) return;
             
+            var one = function() {};
+            var onError = config.error || one,
+                onSuccess = config.success || one,
+                onComplete = config.complete || one;
+            
             var method = (config.method || "GET").toUpperCase();
             var data = config.data;
-            if (method == "GET" && data) {
+            if (method == "GET" && typeof data == "object") {
                 url = joe.fn.urlcat(url, data);
                 data = undefined;
             }
             
             req.open(method, url, !!config.async);
-            //req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-            //req.setRequestHeader("User-Agent", "joe/0.1");
-            if (method == "POST") req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            
+            if (method == "POST" && typeof data == "object") {
+                data = joe.fn.kvjoin(data);
+                req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            }
             
             req.onreadystatechange = function () {
                 if (req.readyState != 4) return;
                 if (req.status == 0) return;
                 if (req.status != 200 && req.status != 304) {
-                    config.error && config.error(req, req.statusText);
+                    onError(req, req.statusText);
                 } else {
-                    config.success && config.success(req.response, req.statusText, req);
+                    onSuccess(req.response, req.statusText, req);
                 }
-                config.complete && config.complete(req, req.statusText);
+                onComplete(req, req.statusText);
             }
             if (req.readyState == 4) return;
             try {
                 req.send(data);
             } catch (e) {
-                config.error && config.error(req, req.statusText, e);
+                onError(req, req.statusText, e);
+                onComplete(req, req.statusText);
             }
         }
     });

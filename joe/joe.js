@@ -188,7 +188,7 @@
         // ex 3: $.ajax({url: "loc", method: "post", data: {key: "value", x: 3.14})
         //  --> POST loc, body == key=value&x=3.14
         ajax: function(config) {
-            var req = createXMLHTTPObject(), url = config.url;
+            var req = new XMLHttpRequest(), url = config.url;
             if (!req || !url) return;
             
             var one = function() {};
@@ -212,8 +212,7 @@
             }
             
             req.onreadystatechange = function () {
-                if (req.readyState != 4) return;
-                if (req.status == 0) return;
+                if (req.readyState != 4 || req.status == 0) return;
                 if (req.status != 200 && req.status != 304) {
                     onError(req, req.statusText);
                 } else {
@@ -232,25 +231,6 @@
             }
         }
     });
-
-    var XMLHttpFactories = [
-        function() { return new XMLHttpRequest() },
-        function() { return new ActiveXObject("Msxml2.XMLHTTP") },
-        function() { return new ActiveXObject("Msxml3.XMLHTTP") },
-        function() { return new ActiveXObject("Microsoft.XMLHTTP") }
-    ];
-    var createXMLHTTPObject = function () {
-        var xmlhttp = false;
-        for (var i = 0; i < XMLHttpFactories.length; i++) {
-            try {
-                xmlhttp = XMLHttpFactories[i]();
-            } catch (e) {
-                continue;
-            }
-            break;
-        }
-        return xmlhttp;
-    };
     
     joe.fn.extend(joe.fn, joe);
     

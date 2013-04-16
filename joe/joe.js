@@ -217,7 +217,9 @@
                 if (req.status != 200 && req.status != 304) {
                     onError(req, req.statusText);
                 } else {
-                    onSuccess(req.response, req.statusText, req);
+                    var type = req.getResponseHeader("content-type"), data = req.response;
+                    if (type === "application/json") data = JSON.parse(data);
+                    onSuccess(data, req.statusText, req);
                 }
                 onComplete(req, req.statusText);
             }

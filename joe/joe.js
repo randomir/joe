@@ -108,9 +108,11 @@
     
     // basic (instance related)
     joe.init.prototype.extend({
-        // $(elem).on("click", someFn)
+        // $().on("click", someFn)
         on: function(type, fn) {
-            this.attach(this[0], type, fn);
+            return this.each(function() {
+                joe.fn.attach(this, type, fn);
+            });
         },
         
         // $().each(function(idx, data) { this <- elementIterated }, data)

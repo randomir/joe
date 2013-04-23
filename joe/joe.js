@@ -155,6 +155,12 @@
                 this.className = this.className.split(" ").filtered(function() { return this.toString() !== cls; }).join(" ");
             });
         },
+        toggleClass: function(cls) {
+            return this.each(function() {
+                var e = $(this);
+                e.hasClass(cls) ? e.removeClass(cls) : e.addClass(cls);
+            });
+        },
         hide: function() {
             return this.css({display: "none"});
         },

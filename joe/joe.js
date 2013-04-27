@@ -62,6 +62,17 @@
                 elem.attachEvent("on"+type, handler);
             }
         },
+
+        dispatch: function(elem, type) {
+            if (document.createEvent) {
+                var event = document.createEvent("Event");
+                event.initEvent(type, true, false);
+                elem.dispatchEvent(event);
+            } else if (document.createEventObject) {
+                event = document.createEventObject();
+                elem.fireEvent("on"+type, event);
+            }
+        },
         
         // joe.fn.select(".test, a > input[type=radio]" [, parentNode])
         select: function(selector, parent) {
@@ -112,6 +123,13 @@
         on: function(type, fn) {
             return this.each(function() {
                 joe.fn.attach(this, type, fn);
+            });
+        },
+
+        // $().trigger("click")
+        trigger: function(type, fn) {
+            return this.each(function() {
+                joe.fn.dispatch(this, type);
             });
         },
         
